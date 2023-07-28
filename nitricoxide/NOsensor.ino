@@ -86,9 +86,16 @@ static void prepareTxFrame( uint8_t port )
 	*for example, if use REGION_CN470, 
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
-    byte appData[2];
-    appData[0] = highByte(differenceNO);
-    appData[1] = lowByte(differenceRef);
+    
+    //appData[0] = highByte(differenceNO);
+    //appData[1] = lowByte(differenceRef);
+	appDataSize = 6;
+	appData[0] = (byte)'A';
+	appData[1] = (byte)'l';
+	appData[2] = (byte)'v';
+	appData[3] = (byte)'a';
+	appData[4] = (byte)'r';
+	appData[5] = (byte)'o';
 }
 
 // Task handles for Core 0 and Core 1
