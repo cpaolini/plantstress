@@ -93,16 +93,28 @@ static void prepareTxFrame( uint8_t port )
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
     
-    //appData[0] = highByte(differenceNO);
-    //appData[1] = lowByte(differenceRef);
-	appDataSize = 7;
-	appData[0] = (byte)'A';
-	appData[1] = (byte)'l';
-	appData[2] = (byte)'v';
-	appData[3] = (byte)'a';
-	appData[4] = (byte)'r';
-	appData[5] = (byte)'o';
-	appData[6] = (byte) getRandomLetter() ;
+    	String NO;
+  	String Ref;    /*New string is defined*/
+
+	  NO = String(differenceNO);
+	  Ref = String(differenceRef);
+	  Serial.println(Ref);
+	  appDataSize = 4;
+	  appData[0] = differenceNO/256;
+	  appData[1] = differenceNO%256;
+	  appData[2] = differenceRef/256;
+	  appData[3] = differenceRef%256;
+	    /*
+	    appData[0] = (byte)'A';
+	    appData[1] = (byte)'l';
+	    appData[2] = (byte)'v';
+	    appData[3] = (byte)'a';
+	    appData[4] = (byte)'r';
+	    appData[5] = (byte)'o';
+	    appData[6] = (byte) getRandomLetter() ;
+	    Serial.println("TX packet prepared");
+	    Serial.println(appData[6]);
+	    */
 }
 
 
@@ -184,10 +196,10 @@ interrupts();
 }
 
 void loop() {
-  /*
-	activateAirFlow();
+  
+    //activateAirFlow();
     
-    delay(10000);
+    //delay(10000);
 
     IRPulse();
 
@@ -197,7 +209,7 @@ void loop() {
     Serial.print("NO Amplitude: ");
     differenceNO = computeDifference(NOValues);
     Serial.println(differenceNO);
-    */
+    
 
 
     LoRasend();
