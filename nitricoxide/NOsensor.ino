@@ -23,7 +23,8 @@ const int arraySize = 500;
 int NOValues[arraySize];
 int RefValues[arraySize];
 volatile int currentIndex = 0; // Index to keep track of the current position in the array
-volatile int difference = 0;   // Difference between the maximum and minimum values
+int differenceRef = 0;   // Difference between the maximum and minimum values
+int differenceNO = 0;   // Difference between the maximum and minimum values
 volatile bool readyToSend = false;
 
 
