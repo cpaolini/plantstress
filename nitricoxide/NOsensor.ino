@@ -175,10 +175,10 @@ void loop() {
     IRPulse();
 
     Serial.print("REF Amplitude: ");
-    differenceRef = computeDifference(RefValues)
+    differenceRef = computeDifference(RefValues);
     Serial.println(differenceNO);
     Serial.print("NO Amplitude: ");
-    differenceNO = computeDifference(NOValues)
+    differenceNO = computeDifference(NOValues);
     Serial.println(differenceNO);
 
     delay(500);
