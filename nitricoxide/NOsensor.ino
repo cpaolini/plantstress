@@ -88,7 +88,7 @@ static void prepareTxFrame( uint8_t port )
 	*/
     byte appData[2];
     appData[0] = highByte(differenceNO);
-    appData[1] = lowByte(differenceREF);
+    appData[1] = lowByte(differenceRef);
 }
 
 // Task handles for Core 0 and Core 1
