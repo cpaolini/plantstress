@@ -77,6 +77,12 @@ uint8_t appPort = 2;
 /* Number of trials to transmit the frame */
 uint8_t confirmedNbTrials = 4;
 
+char getRandomLetter() {
+  int randomNumber = random(26); // Generate a random number between 0 and 25
+  char randomLetter = 'a' + randomNumber; // Convert the random number to an ASCII character in the range 'a' to 'z'
+  return randomLetter;
+}
+
 static void prepareTxFrame( uint8_t port )
 {
 	/*appData size is LORAWAN_APP_DATA_MAX_SIZE which is defined in "commissioning.h".
@@ -89,21 +95,26 @@ static void prepareTxFrame( uint8_t port )
     
     //appData[0] = highByte(differenceNO);
     //appData[1] = lowByte(differenceRef);
-	appDataSize = 6;
+	appDataSize = 7;
 	appData[0] = (byte)'A';
 	appData[1] = (byte)'l';
 	appData[2] = (byte)'v';
 	appData[3] = (byte)'a';
 	appData[4] = (byte)'r';
 	appData[5] = (byte)'o';
+	appData[6] = (byte) getRandomLetter() ;
 }
 
+
 // Task handles for Core 0 and Core 1
+/*
 TaskHandle_t core0TaskHandle = NULL;
 TaskHandle_t core1TaskHandle = NULL;
 
 void core0Task(void* parameter);
 void core1Task(void* parameter);
+*/
+
 
 void setup() {
 
@@ -172,10 +183,9 @@ interrupts();
 */
 }
 
-
 void loop() {
-  
-    activateAirFlow();
+  /*
+	activateAirFlow();
     
     delay(10000);
 
@@ -187,8 +197,8 @@ void loop() {
     Serial.print("NO Amplitude: ");
     differenceNO = computeDifference(NOValues);
     Serial.println(differenceNO);
+    */
 
-    delay(500);
 
     LoRasend();
 
@@ -303,7 +313,7 @@ void LoRasend(){
     }
   
   }
-  delay(600000);
+  delay(120000);
 
 }
 
