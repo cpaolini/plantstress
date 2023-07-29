@@ -23,8 +23,8 @@ const int arraySize = 500;
 int NOValues[arraySize];
 int RefValues[arraySize];
 volatile int currentIndex = 0; // Index to keep track of the current position in the array
-int differenceRef = 0;   // Difference between the maximum and minimum values
-int differenceNO = 0;   // Difference between the maximum and minimum values
+int differenceRef ;   // Difference between the maximum and minimum values
+int differenceNO ;   // Difference between the maximum and minimum values
 volatile bool readyToSend = false;
 
 
@@ -93,28 +93,20 @@ static void prepareTxFrame( uint8_t port )
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
     
-    	String NO;
-  	String Ref;    /*New string is defined*/
-
-	  NO = String(differenceNO);
-	  Ref = String(differenceRef);
-	  Serial.println(Ref);
-	  appDataSize = 4;
-	  appData[0] = differenceNO/256;
-	  appData[1] = differenceNO%256;
-	  appData[2] = differenceRef/256;
-	  appData[3] = differenceRef%256;
-	    /*
-	    appData[0] = (byte)'A';
-	    appData[1] = (byte)'l';
-	    appData[2] = (byte)'v';
-	    appData[3] = (byte)'a';
-	    appData[4] = (byte)'r';
-	    appData[5] = (byte)'o';
-	    appData[6] = (byte) getRandomLetter() ;
-	    Serial.println("TX packet prepared");
-	    Serial.println(appData[6]);
-	    */
+  appDataSize = 4;
+  char Refup[8];
+  char Ref[8];
+  char NOup[8];
+  char NO[8];
+  dtostrf(differenceRef/256, 6, 0,Refup);
+  dtostrf(differenceRef%256,6, 0,Ref);
+  dtostrf(differenceNO/256, 6, 0,NOup);
+  dtostrf(differenceNO%256, 6, 0,NO);
+  // Assuming appData is declared as an array of uint8_t
+  appData[0] = static_cast<uint8_t>(atoi(Refup));
+  appData[1] = static_cast<uint8_t>(atoi(Ref));
+  appData[2] = static_cast<uint8_t>(atoi(NOup));
+  appData[3] = static_cast<uint8_t>(atoi(NO));
 }
 
 
