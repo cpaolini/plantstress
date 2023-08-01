@@ -98,15 +98,15 @@ static void prepareTxFrame( uint8_t port )
   char Ref[8];
   char NOup[8];
   char NO[8];
-  dtostrf(differenceRef/256, 6, 0,Refup);
-  dtostrf(differenceRef%256,6, 0,Ref);
-  dtostrf(differenceNO/256, 6, 0,NOup);
-  dtostrf(differenceNO%256, 6, 0,NO);
+  sprintf(Refup, "%ld", differenceRef / 256);
+  sprintf(Ref, "%ld", differenceRef % 256);
+  sprintf(NOup, "%ld", differenceNO / 256);
+  sprintf(NO, "%ld", differenceNO % 256);
   // Assuming appData is declared as an array of uint8_t
-  appData[0] = static_cast<uint8_t>(atoi(Refup));
-  appData[1] = static_cast<uint8_t>(atoi(Ref));
-  appData[2] = static_cast<uint8_t>(atoi(NOup));
-  appData[3] = static_cast<uint8_t>(atoi(NO));
+  appData[0] = static_cast<uint8_t>(Refup[0]);
+  appData[1] = static_cast<uint8_t>(Ref[0]);
+  appData[2] = static_cast<uint8_t>(NOup[0]);
+  appData[3] = static_cast<uint8_t>(NO[0]);
 }
 
 
