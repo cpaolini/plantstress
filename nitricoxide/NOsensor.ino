@@ -93,20 +93,15 @@ static void prepareTxFrame( uint8_t port )
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
     
-  appDataSize = 4;
-  char Refup[8];
-  char Ref[8];
-  char NOup[8];
-  char NO[8];
-  sprintf(Refup, "%ld", differenceRef / 256);
-  sprintf(Ref, "%ld", differenceRef % 256);
-  sprintf(NOup, "%ld", differenceNO / 256);
-  sprintf(NO, "%ld", differenceNO % 256);
-  // Assuming appData is declared as an array of uint8_t
-  appData[0] = static_cast<uint8_t>(Refup[0]);
-  appData[1] = static_cast<uint8_t>(Ref[0]);
-  appData[2] = static_cast<uint8_t>(NOup[0]);
-  appData[3] = static_cast<uint8_t>(NO[0]);
+  char buf[16];
+  sprintf(buf, "%ld,%ld,%ld,%ld", differenceRef / 256, differenceRef % 256, differenceNO / 256, differenceNO % 256);
+  Serial.println(buf);
+  int bufLength=strlen(buf);
+  appDataSize = bufLength;
+  
+  for (int i = 0; i < bufLength; i++) {
+    appData[i] = buf[i];
+}
 }
 
 
