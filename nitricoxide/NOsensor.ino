@@ -1,7 +1,5 @@
 #include <heltec.h>
 #include "LoRaWan_APP.h"
-
-
 #include <SPI.h>
 
 
@@ -19,19 +17,19 @@ const int ledChannel = 0;   // Channel 0
 const int resolution = 12;  // 12 bit resolution
 const int dutyCycle = 2048; // 25% Duty Cycle
 
-const int arraySize = 500; 
+const int arraySize = 4000; 
 int NOValues[arraySize];
 int RefValues[arraySize];
 volatile int currentIndex = 0; // Index to keep track of the current position in the array
+int differenceNO ;
 int differenceRef ;   // Difference between the maximum and minimum values
-int differenceNO ;   // Difference between the maximum and minimum values
 volatile bool readyToSend = false;
 
 
 
 // Variables
 const unsigned long pumpDuration = 15000; 
-const unsigned long IRSourceDuration= 500; // Duration of air pump activation in milliseconds [5 seg]
+const unsigned long IRSourceDuration= 4000; // Duration of ir pulse  in milliseconds [8 seg]
 unsigned long previousMillis = 0;       // Stores the previous timestamp for comparison
 float amplitudeRef; // Peak to peak value of the Reference
 float amplitudeNo; // Peak to peak value of the Nitric Oxide Gas
@@ -77,11 +75,7 @@ uint8_t appPort = 2;
 /* Number of trials to transmit the frame */
 uint8_t confirmedNbTrials = 4;
 
-char getRandomLetter() {
-  int randomNumber = random(26); // Generate a random number between 0 and 25
-  char randomLetter = 'a' + randomNumber; // Convert the random number to an ASCII character in the range 'a' to 'z'
-  return randomLetter;
-}
+
 
 static void prepareTxFrame( uint8_t port )
 {
@@ -92,27 +86,21 @@ static void prepareTxFrame( uint8_t port )
 	*for example, if use REGION_CN470, 
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
-    
+  
+
   char buf[16];
+
   sprintf(buf, "%ld,%ld,%ld,%ld", differenceRef / 256, differenceRef % 256, differenceNO / 256, differenceNO % 256);
-  Serial.println(buf);
+
   int bufLength=strlen(buf);
   appDataSize = bufLength;
   
   for (int i = 0; i < bufLength; i++) {
     appData[i] = buf[i];
-}
-}
+} 
 
+  }
 
-// Task handles for Core 0 and Core 1
-/*
-TaskHandle_t core0TaskHandle = NULL;
-TaskHandle_t core1TaskHandle = NULL;
-
-void core0Task(void* parameter);
-void core1Task(void* parameter);
-*/
 
 
 void setup() {
@@ -146,61 +134,35 @@ void setup() {
   
   // Set up Serial communication at a baud rate of 115200
   Serial.begin(115200);
-  
-  // Print a message to the Serial Monitor
-  Serial.println("Solenoid Valve Control");
+ 
 
-  
   //LoRa
   Mcu.begin();
   deviceState = DEVICE_STATE_INIT;
 
-/*
-xTaskCreatePinnedToCore(core0Task, "Core 0 Task", 10000, NULL, 1, &core0TaskHandle, 0);
-xTaskCreatePinnedToCore(core1Task, "Core 1 Task", 10000, NULL, 1, &core1TaskHandle, 1);
-
-
-  
-  
-// Configure Timer0 to generate a 10 Hz pulse square wave for the IR source
-noInterrupts();
-
-// Set Timer1 to 1 Hz (1 second period)
-Timer1.attachInterrupt(timer1ISR);
-Timer1.initialize(1000000); // 1 second = 1,000,000 microseconds
-Timer1.stop(); // Stop the timer initially
-// Configure LEDC to generate a 10Hz pulse with 50% duty cycle on irSourcePin
-ledcSetup(0, 10, 8);
-ledcAttachPin(irSourcePin, 0);
-
-// Configure Timer2 to trigger an interrupt at approximately 0.017 Hz (1 time every 60 seconds) for LoRaWAN transmission
-Timer2.attachInterrupt(timer2ISR);
-Timer2.initialize(58593750); // 1 minute = 58,593,750 microseconds
-Timer2.stop(); // Stop the timer initially
-interrupts();
-
-*/
 }
+
 
 void loop() {
   
-    //activateAirFlow();
     
-    //delay(10000);
+    activateAirFlow();
+    
+    delay(5000);
 
     IRPulse();
 
-    Serial.print("REF Amplitude: ");
+    //Serial.print("REF Amplitude: ");
     differenceRef = computeDifference(RefValues);
-    Serial.println(differenceNO);
-    Serial.print("NO Amplitude: ");
+    Serial.print(differenceRef);
+    //Serial.print("NO Amplitude: ");
+    Serial.print(", ");
     differenceNO = computeDifference(NOValues);
-    Serial.println(differenceNO);
+    Serial.print(differenceNO);
+    Serial.print(", ");
     
-
-
+  
     LoRasend();
-
     
 }
 
@@ -241,12 +203,12 @@ void readSensor(){
   readingNO=analogRead(NOgasPin);
   readingRef=analogRead(REFgasPin);
 
+ // Store the sensor value in the array
   NOValues[currentIndex] = readingNO; 
   RefValues[currentIndex] = readingRef;
 
-  currentIndex=(currentIndex + 1) % arraySize;   // Store the sensor value in the array
-  //Serial.println(reading);
-  // Move to the next index or wrap around if we reached the end of the array
+  currentIndex=(currentIndex + 1) % arraySize;   
+  
   delay(1);
 }
 
@@ -255,14 +217,11 @@ void IRPulse(){
   delay(500);
   previousMillis = millis();
   // Print a message to the Serial Monitor
-  Serial.println("ir source  activated");
+  //Serial.println("ir source  activated");
   ledcWrite(ledChannel, dutyCycle); 
   // Wait for the specified duration
   while (millis() - previousMillis < IRSourceDuration) {
-    
-    //ledcWrite(ledChannel, dutyCycle); 
     readSensor();
-
   }
 
   ledcWrite(ledChannel, 0);
@@ -289,6 +248,7 @@ void LoRasend(){
     case DEVICE_STATE_SEND:
     {
       prepareTxFrame( appPort );
+      
       LoRaWAN.send();
       deviceState = DEVICE_STATE_CYCLE;
       break;
@@ -313,7 +273,6 @@ void LoRasend(){
   
   }
   delay(120000);
-
 }
 
 int computeDifference(int adcValues[]) {
