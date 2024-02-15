@@ -4,7 +4,7 @@
 
 
 // Pin Definitions
-const int batteryPin = 1;    // Pin connected to the Battery Capacity sensor
+const int batteryPin = 1;    // Pin connected to the Battery Capacity sensor //New and unsused
 const int NOgasPin = 3;      // Pin connected to the NO gas output sensor
 const int REFgasPin = 2;     // Pin connected to the Reference output sensor
 const int IRSourcePin = 4;   // Pin connected to the IR Source
@@ -161,8 +161,16 @@ void loop() {
     Serial.print(differenceNO);
     Serial.print(", ");
     
-  
+    /* Removed for some reason
+    // Calculate the concentration
+    float concentration = calculateX(differenceRef,differenceNO);*/
+    
     LoRasend();
+
+    /* Removed for some reason
+    // Go to deep sleep mode for 12 hours
+    esp_sleep_enable_timer_wakeup(2592000000000);
+    esp_deep_sleep_start();*/
     
 }
 
@@ -191,7 +199,7 @@ void activateAirFlow() {
   // Deactivate the solenoid valve
   digitalWrite(solenoidPin, LOW);  // Turn off the solenoid valve
 
-  delay(10000);
+  delay(10000); //New
   
   // Print a message to the Serial Monitor
   Serial.println("Solenoid valves deactivated");
@@ -228,6 +236,20 @@ void IRPulse(){
   
 }
 
+/*Removed for some reason
+int calculateX(float act, float ref) {
+
+ // Params calculated in the calibration process
+ float b = 44.41808;
+ float zero = 1.59987;
+ // Calculate concentration the formula
+ float x = log(act / (ref * zero)) / -b;
+ // Transform concentration to bigger number so we can send an integer
+ // The data send have to be divided by 100 in order to get ppm
+ x=x*1000000;
+ int t = static_cast<int>(x + 0.5);
+ return t;
+}*/
 
 void LoRasend(){
   switch( deviceState )
