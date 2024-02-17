@@ -105,7 +105,7 @@ static void prepareTxFrame( uint8_t port )
 
 void setup() {
 
-  Heltec.begin(true /*DisplayEnable Enable*/, true /*LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, 470E6 /**/);
+  Heltec.begin(true /*DisplayEnable Enable*/, true /*LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, 915E6 /*Should match LoraWan region, select in arduino IDE tools*/);
 
 
   // Initialize the pins as inputs outputs
